@@ -28,7 +28,6 @@ class AlbumListCommand extends Command
         $io->writeln('Done!');
 
 
-
         $io->writeln($albums);
 
 //        $pd = new iCloudPD();

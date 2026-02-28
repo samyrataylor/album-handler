@@ -7,9 +7,8 @@ class Process
     protected(set) ?int $timeStarted = null;
     protected(set) ?int $timeStopped = null;
     protected(set) string $realCommand;
-    protected array $output = [];
-
     protected(set) ?int $returnCode;
+    protected array $output = [];
 
     public function __construct(
         protected(set) string $command,
@@ -81,13 +80,13 @@ class Process
 
         exec($this->realCommand, $output, $returnCode);
 
-        if($outputOnly) {
+        if ($outputOnly) {
             return $output;
         }
 
         return [
             'returnCode' => $returnCode,
-            'output' => $output,
+            'output'     => $output,
         ];
     }
 

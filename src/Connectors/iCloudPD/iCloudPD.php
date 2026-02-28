@@ -17,9 +17,6 @@ class iCloudPD
     {
         $client ??= new Client();
 
-        dump(Config::all());
-        dump(App::env());
-
         if ($username = App::config()->get('icloudpd.auth.username')) {
             dump($username);
             $client->username($username);
