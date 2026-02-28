@@ -1,0 +1,29 @@
+{
+  "version": "0.1",
+  "name": "samyrataylor/album-handler",
+  "require": {
+    "symfony/console": "^8.0",
+    "php": "^8.5",
+    "symfony/config": "^8.0",
+    "symfony/finder": "^8.0",
+    "adbario/php-dot-notation": "^3.3",
+    "ext-posix": "*",
+    "ext-pcntl": "*",
+    "vlucas/phpdotenv": "^5.6"
+  },
+  "require-dev": {
+    "psy/psysh": "dev-main"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Samyra Taylor",
+      "email": "samyra.taylor@envorra.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "SamyraTaylor\\AlbumHandler\\": "src/"
+    }
+  }
+}

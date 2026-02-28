@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+
+<?php
+
+if (file_exists(__DIR__ . '/../../autoload.php')) {
+    require __DIR__ . '/../../autoload.php';
+} else {
+    require __DIR__ . '/vendor/autoload.php';
+}
+
+use SamyraTaylor\AlbumHandler\Support\App;
+use Symfony\Component\Finder\Finder;
+
+$container = App::create(__DIR__);
+
+if ($container === false) {
+    throw new RuntimeException('Unable to create application.');
+}
+
+date_default_timezone_set($container->config->get('app.timezone', 'UTC'));
+
+foreach ($container->config->get('app.commandNamespaceMap', []) as $path => $namespace) {
+    if (!str_ends_with($namespace, '\\')) {
+        $namespace = $namespace . '\\';
+    }
+
+    $commandFinder = new Finder();
+    $commandFinder->in(__DIR__ . '/' . $path)->name('*.php');
+
+    foreach ($commandFinder as $command) {
+        $className = $namespace . $command->getFilenameWithoutExtension();
+        $container->console->addCommand(new $className);
+    }
+
+}
+
+$container->console->run();
