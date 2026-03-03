@@ -3,7 +3,11 @@
 namespace SamyraTaylor\AlbumHandler\Commands;
 
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\iCloudPD;
+use SamyraTaylor\AlbumHandler\Data\User;
+use SamyraTaylor\AlbumHandler\Exceptions\ActionException;
+use SamyraTaylor\AlbumHandler\Support\App;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -12,23 +16,44 @@ class AlbumListCommand extends Command
 {
     protected function configure(): void
     {
-        $this->setName('album:list');
+        $this->setName('album:list')
+             ->addArgument('user', InputArgument::REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $pd = new iCloudPD();
+        $name = $input->getArgument('user') ?? App::env('DEFAULT_USER');
 
-        $io->write('→ Getting album listing from iCloud...');
+        try {
+            $assets = iCloudPD::user(User::load($name))->listAlbums();
+        } catch (ActionException $e) {
+            $io->error($e->getMessage());
 
-        $albums = $pd->listAlbums();
+            return Command::FAILURE;
+        }
 
-        $io->writeln('Done!');
+        $io->table(['Album Name'], array_map(fn(string $name) => [$name], $assets));
+        $io->success('Found ' . count($assets) . ' albums!');
 
-
-        $io->writeln($albums);
+//        $action = iCloudPD::listAlbums();
+//
+//
+//
+//
+//
+//
+//        $pd = new combinedClass();
+//
+//        $io->write('→ Getting album listing from iCloud...');
+//
+//        $albums = $pd->listAlbums();
+//
+//        $io->writeln('Done!');
+//
+//
+//        $io->writeln($albums);
 
 //        $pd = new iCloudPD();
 //        dd($pd->version());
@@ -46,7 +71,7 @@ class AlbumListCommand extends Command
 //            $io->writeln('<info>'.$pd->getAssetCount($album).'</info>');
 //        }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
 }

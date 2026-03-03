@@ -47,13 +47,36 @@ class Config
         return App::config();
     }
 
-    public function userPath(): string
+    public function userPath(?string $path = null): string
     {
-        return $this->get('path.user') ?? '';
+        return $this->path($path, $this->get('path.user'));
+    }
+
+    public function path(?string $path = null, ?string $base = null): string
+    {
+        $base ??= $this->get('path.base');
+        $path = is_null($path) ? $base : Str::finish($base, DIRECTORY_SEPARATOR) . $path;
+
+        return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
     }
 
     public function get(string $key, mixed $default = null): mixed
     {
         return $this->config->get($key, $default);
+    }
+
+    public function basePath(?string $path = null): string
+    {
+        return $this->path($path, $this->get('path.base'));
+    }
+
+    public function configPath(?string $path = null): string
+    {
+        return $this->path($path, $this->get('path.config'));
+    }
+
+    public function appPath(?string $path = null): string
+    {
+        return $this->path($path, $this->get('path.app'));
     }
 }

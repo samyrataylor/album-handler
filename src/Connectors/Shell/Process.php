@@ -4,6 +4,7 @@ namespace SamyraTaylor\AlbumHandler\Connectors\Shell;
 
 class Process
 {
+    protected(set) bool $cancelled = false;
     protected(set) ?int $timeStarted = null;
     protected(set) ?int $timeStopped = null;
     protected(set) string $realCommand;
@@ -56,7 +57,7 @@ class Process
 
     public function run(): static
     {
-        if (!$this->executed() && !$this->running()) {
+        if (!$this->started() && !$this->executed() && !$this->cancelled) {
             $this->timeStarted = time();
 
             $result = $this->execute();
@@ -67,11 +68,6 @@ class Process
         }
 
         return $this;
-    }
-
-    public function running(): bool
-    {
-        return $this->started() && !$this->stopped();
     }
 
     protected function execute(bool $outputOnly = false): array
@@ -93,5 +89,19 @@ class Process
     protected function buildCommand(): string
     {
         return sprintf('%s 2>&1', $this->command);
+    }
+
+    public function running(): bool
+    {
+        return $this->started() && !$this->stopped();
+    }
+
+    public function cancel(): bool
+    {
+        if (!$this->started() && !$this->executed()) {
+            $this->cancelled = true;
+            return true;
+        }
+        return false;
     }
 }

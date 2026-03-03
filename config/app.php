@@ -11,7 +11,6 @@ return [
     'users' => [
         'enabled'    => App::env('MULTI_USER', false),
         'cookies'    => App::env('USER_COOKIES', false),
-        'useAliases' => App::env('ALIAS_USERS', true),
         'infoFile'   => App::env('USER_INFO', 'user.json'),
         'default'    => App::env('DEFAULT_USER'),
     ],

@@ -2,7 +2,9 @@
 
 namespace SamyraTaylor\AlbumHandler\Commands;
 
+use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\combinedClass;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\iCloudPD;
+use SamyraTaylor\AlbumHandler\Exceptions\ActionException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,8 +21,15 @@ class VersionCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->writeln(new iCloudPD()->version());
+        try {
+            $version = iCloudPD::make()->version();
+        } catch (ActionException $e) {
+            $io->error($e->getMessage());
+            return Command::FAILURE;
+        }
 
-        return 0;
+        $io->success(sprintf('iCloudPD Version %s', $version));
+
+        return Command::SUCCESS;
     }
 }
