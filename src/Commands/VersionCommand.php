@@ -2,7 +2,6 @@
 
 namespace SamyraTaylor\AlbumHandler\Commands;
 
-use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\combinedClass;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\iCloudPD;
 use SamyraTaylor\AlbumHandler\Exceptions\ActionException;
 use Symfony\Component\Console\Command\Command;

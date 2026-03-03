@@ -2,7 +2,6 @@
 
 namespace SamyraTaylor\AlbumHandler\Commands;
 
-use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\combinedClass;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\iCloudPD;
 use SamyraTaylor\AlbumHandler\Data\User;
 use SamyraTaylor\AlbumHandler\Exceptions\ActionException;

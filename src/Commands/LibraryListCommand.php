@@ -2,7 +2,6 @@
 
 namespace SamyraTaylor\AlbumHandler\Commands;
 
-use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\combinedClass;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,7 +18,7 @@ class LibraryListCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $libraries = new combinedClass()->listLibraries();
+        $libraries = [];
 
         $io->writeln($libraries);
 
