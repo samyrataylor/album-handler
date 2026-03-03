@@ -18,10 +18,8 @@ class LibraryListCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $libraries = [];
+        $io->warning('Currently only set up to sync the primary library.');
 
-        $io->writeln($libraries);
-
-        return 0;
+        return Command::SUCCESS;
     }
 }

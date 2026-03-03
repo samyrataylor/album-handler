@@ -4,17 +4,13 @@ namespace SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions;
 
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Client;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\iCloudPD;
-use SamyraTaylor\AlbumHandler\Connectors\Shell\BackgroundProcess;
 use SamyraTaylor\AlbumHandler\Connectors\Shell\Process;
 use SamyraTaylor\AlbumHandler\Exceptions\ActionException;
 use SamyraTaylor\AlbumHandler\Exceptions\AlbumNotFoundException;
 use SamyraTaylor\AlbumHandler\Support\App;
 
-class CountAlbumAssetsAction extends BaseAction
+class CountAlbumAssetsAction extends CountLibraryAssetsAction
 {
-    public static RunType $runType = RunType::Background;
-    public static bool $requiresAuth = true;
-
     public static bool $throwException = true;
 
     protected function parseArguments(array $arguments): array
@@ -53,28 +49,5 @@ class CountAlbumAssetsAction extends BaseAction
         }
 
         return $process;
-    }
-
-    protected function handle(Process $process): ?int
-    {
-        if (!$process instanceof BackgroundProcess || $process->cancelled) {
-            return null;
-        }
-
-        do {
-            usleep(300000);
-
-            $filtered = array_values(
-                array_filter(
-                    $process->output(),
-                    fn(string $item) => str_contains($item, 'original')
-                )
-            );
-
-        } while (count($filtered) === 0);
-
-        $process->kill();
-
-        return (int)preg_replace('/^.* Downloading ([0-9]+) .*/', '\1', $filtered[0]);
     }
 }

@@ -4,6 +4,7 @@ namespace SamyraTaylor\AlbumHandler\Connectors\iCloudPD;
 
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\AuthOnlyAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\CountAlbumAssetsAction;
+use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\CountLibraryAssetsAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\ListAlbumsAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\ListLibrariesAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\VersionAction;
@@ -75,9 +76,13 @@ class iCloudPD
         return new AuthOnlyAction($this->client())->user($this->user)->run();
     }
 
-    public function countLibraryAssets(?string $library = null): ?int
+    /**
+     * @throws ActionException
+     * @throws MissingCredentialsException
+     */
+    public function countLibraryAssets(): ?int
     {
-        return null;
+        return new CountLibraryAssetsAction($this->client())->user($this->user)->run();
     }
 
     /**
