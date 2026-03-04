@@ -9,6 +9,8 @@ use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Options\MFAProvider;
 use SamyraTaylor\AlbumHandler\Support\App;
 
 return [
+    'allowDestructiveActions' => App::env('ALLOW_DESTRUCTIVE_ACTIONS', false),
+
     'auth' => [
         'username' => App::env('ICLOUDPD_USERNAME'),
         'password' => App::env('ICLOUDPD_PASSWORD'),

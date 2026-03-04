@@ -5,9 +5,12 @@ namespace SamyraTaylor\AlbumHandler\Connectors\iCloudPD;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\AuthOnlyAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\CountAlbumAssetsAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\CountLibraryAssetsAction;
+use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\DownloadAlbumAction;
+use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\DownloadLibraryAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\ListAlbumsAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\ListLibrariesAction;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions\VersionAction;
+use SamyraTaylor\AlbumHandler\Connectors\Shell\BackgroundProcess;
 use SamyraTaylor\AlbumHandler\Data\User;
 use SamyraTaylor\AlbumHandler\Exceptions\ActionException;
 use SamyraTaylor\AlbumHandler\Exceptions\AlbumNotFoundException;
@@ -16,6 +19,8 @@ use SamyraTaylor\AlbumHandler\Exceptions\MissingCredentialsException;
 class iCloudPD
 {
     protected(set) User $user;
+
+    protected(set) bool $inBackground = false;
 
     /**
      * @throws MissingCredentialsException
@@ -95,7 +100,22 @@ class iCloudPD
         return new CountAlbumAssetsAction($this->client())->user($this->user)->run($album);
     }
 
-    public function downloadLibrary() {}
+    /**
+     * @throws ActionException
+     * @throws MissingCredentialsException
+     */
+    public function downloadLibrary(): ?BackgroundProcess
+    {
+        return new DownloadLibraryAction($this->client())->user($this->user)->run();
+    }
 
-    public function downloadAlbum() {}
+    /**
+     * @throws ActionException
+     * @throws MissingCredentialsException
+     * @throws AlbumNotFoundException
+     */
+    public function downloadAlbum(string $album): ?BackgroundProcess
+    {
+        return new DownloadAlbumAction($this->client())->user($this->user)->run($album);
+    }
 }

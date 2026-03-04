@@ -68,6 +68,12 @@ class Client implements iCloudPDClient
         'mfaProvider'             => '--mfa-provider',
     ];
 
+    public const array DESTRUCTIVE_ACTIONS = [
+        'autoDelete',
+        'keepRecentDays',
+    ];
+
+    protected(set) bool $allowDestructiveActions;
     protected(set) string $name;
     protected(set) ?string $installPath;
     protected(set) string $directory;
@@ -124,6 +130,7 @@ class Client implements iCloudPDClient
 
     protected function loadDefaults(): void
     {
+        $this->allowDestructiveActions = App::config()->get('icloudpd.allowDestructiveActions', false);
         $this->name = App::config()->get('icloudpd.name', 'icloudpd');
         $this->installPath = App::config()->get('icloudpd.install_path');
 
@@ -499,6 +506,10 @@ class Client implements iCloudPDClient
 
     protected function buildParameter(string $property): ?string
     {
+        if (in_array($property, static::DESTRUCTIVE_ACTIONS) && !$this->allowDestructiveActions) {
+            return null;
+        }
+
         return ParameterBuilder::from(static::PARAMETERS[$property], $this->$property);
     }
 }

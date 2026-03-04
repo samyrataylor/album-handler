@@ -4,7 +4,9 @@ namespace SamyraTaylor\AlbumHandler\Data;
 
 use Exception;
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Client;
+use SamyraTaylor\AlbumHandler\Connectors\Shell\BackgroundProcess;
 use SamyraTaylor\AlbumHandler\Support\App;
+use SamyraTaylor\AlbumHandler\Support\UserProcesses;
 
 class User
 {
@@ -114,5 +116,16 @@ class User
         }
 
         return $client;
+    }
+
+    public function addBackgroundProcess(BackgroundProcess $process): static
+    {
+        UserProcesses::addUserProcess($this, $process);
+        return $this;
+    }
+
+    public function getProcesses(): array
+    {
+        return UserProcesses::getUserProcesses($this);
     }
 }
