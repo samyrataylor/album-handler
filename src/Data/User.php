@@ -16,7 +16,8 @@ class User
     protected(set) ?string $cookieDirectory = null;
     protected(set) ?string $username = null;
     protected(set) ?string $password = null;
-    protected(set) array $ignoreAlbums = [];
+    protected(set) array $includeAlbums = ['*'];
+    protected(set) array $excludeAlbums = [];
     protected(set) bool $exists = false;
     public readonly array $json;
     public readonly string $userDirectory;
@@ -47,7 +48,17 @@ class User
         $this->cookieDirectory = $this->parseDirectory($this->json['dir']['cookie'] ?? null);
         $this->username = $this->json['auth']['username'] ?? null;
         $this->password = $this->json['auth']['password'] ?? null;
-        $this->ignoreAlbums = $this->json['ignore_albums'] ?? [];
+        $this->includeAlbums = $this->json['albums']['include'] ?? ['*'];
+        $this->excludeAlbums = $this->json['albums']['exclude'] ?? [];
+    }
+
+    public function shouldDownloadAlbum(string $album): bool
+    {
+        if(in_array('*', $this->includeAlbums)) {
+            return !in_array($album, $this->excludeAlbums);
+        }
+
+        return in_array($album, $this->includeAlbums);
     }
 
     protected function parseDirectory(?string $path = null): ?string
@@ -116,16 +127,5 @@ class User
         }
 
         return $client;
-    }
-
-    public function addBackgroundProcess(BackgroundProcess $process): static
-    {
-        UserProcesses::addUserProcess($this, $process);
-        return $this;
-    }
-
-    public function getProcesses(): array
-    {
-        return UserProcesses::getUserProcesses($this);
     }
 }

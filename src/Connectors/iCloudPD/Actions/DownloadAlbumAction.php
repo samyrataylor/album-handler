@@ -3,6 +3,7 @@
 namespace SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Actions;
 
 use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Client;
+use SamyraTaylor\AlbumHandler\Connectors\iCloudPD\Options\Size;
 use SamyraTaylor\AlbumHandler\Support\App;
 
 class DownloadAlbumAction extends DownloadLibraryAction
@@ -16,8 +17,19 @@ class DownloadAlbumAction extends DownloadLibraryAction
 
     protected function build(Client $client): Client
     {
-        return $client->directory($this->user->albumDirectory)
-                      ->album($this->getArgument('album'));
+        $album = $this->getArgument('album');
+
+        $dir = implode(DIRECTORY_SEPARATOR, [
+            $this->user->albumDirectory,
+            str_replace(' ', '_', preg_replace('/\/\\\\/', '', $album)),
+        ]);
+
+        return $client->directory($dir)
+                      ->album($this->getArgument('album'))
+                      ->xmpSidecar()
+                      ->size(Size::Original)
+                      ->size(Size::Adjusted)
+                      ->size(Size::Alternative);
     }
 
     protected function pipeProcessOutput(): string

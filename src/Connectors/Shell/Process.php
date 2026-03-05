@@ -8,7 +8,7 @@ class Process
     protected(set) ?int $timeStarted = null;
     protected(set) ?int $timeStopped = null;
     protected(set) string $realCommand;
-    protected(set) ?int $returnCode;
+    protected(set) ?int $returnCode = null;
     protected array $output = [];
 
     public function __construct(

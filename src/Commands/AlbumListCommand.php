@@ -66,10 +66,7 @@ class AlbumListCommand extends Command
 //
 //        $io->writeln('→ Getting asset counts for all albums...');
 //
-//        foreach($albums as $album) {
-//            $io->write('  ↳ ' . $album. ': ');
-//            $io->writeln('<info>'.$pd->getAssetCount($album).'</info>');
-//        }
+
 
         return Command::SUCCESS;
     }

@@ -28,8 +28,6 @@ class DownloadLibraryAction extends BaseAction
             return null;
         }
 
-        $this->user->addBackgroundProcess($process);
-
         return $process;
     }
 

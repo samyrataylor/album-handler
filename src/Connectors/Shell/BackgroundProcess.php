@@ -8,8 +8,6 @@ class BackgroundProcess extends Process
 
     protected(set) int $pid;
 
-    protected(set) ?int $returnCode = null;
-
     public function pipeOutput(?string $output): static
     {
         $this->pipeOutput = $output ?? '/dev/null';

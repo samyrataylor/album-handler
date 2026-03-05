@@ -8,6 +8,8 @@ return [
         'length'  => App::env('CACHE_LENGTH', '1 day'),
     ],
 
+    'maxUserProcesses' => App::env('MAX_USER_PROCESSES', 1),
+
     'users' => [
         'enabled'    => App::env('MULTI_USER', false),
         'cookies'    => App::env('USER_COOKIES', false),

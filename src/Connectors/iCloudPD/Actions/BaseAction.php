@@ -8,6 +8,7 @@ use SamyraTaylor\AlbumHandler\Connectors\Shell\Process;
 use SamyraTaylor\AlbumHandler\Data\User;
 use SamyraTaylor\AlbumHandler\Exceptions\ActionException;
 use SamyraTaylor\AlbumHandler\Exceptions\MissingCredentialsException;
+use SamyraTaylor\AlbumHandler\Support\UserProcesses;
 
 abstract class BaseAction
 {
@@ -16,6 +17,8 @@ abstract class BaseAction
     protected(set) array $arguments = [];
     protected Process $process;
     protected User $user;
+    protected(set) bool $isQueuedProcess = false;
+    protected(set) int $queuedProcessId;
 
     public function __construct(
         protected Client $client,
@@ -33,7 +36,33 @@ abstract class BaseAction
         $this->arguments = $this->parseArguments($args);
         $this->client = $this->build($this->client);
 
-        return $this->handle($this->beforeRun($this->createProcess())->run());
+        $this->process = $this->createProcess();
+
+        if(!$this->isQueuedProcess) {
+            return $this->handle($this->beforeRun($this->process)->run());
+        }
+
+        if(UserProcesses::canStartProcess($this->user)) {
+            $this->process = $this->beforeRun(
+                UserProcesses::getQueuedProcess($this->user, $this->queuedProcessId)
+            );
+
+            $process = UserProcesses::startQueuedProcess(
+                user: $this->user,
+                queueId: $this->queuedProcessId,
+                mutated: $this->process instanceof BackgroundProcess ? $this->process : null
+            );
+
+            if(!$process) {
+                return null;
+            }
+
+            $this->process = $process;
+
+            return $this->handle($this->process);
+        }
+
+        return null;
     }
 
     protected function parseArguments(array $arguments): array
@@ -53,7 +82,13 @@ abstract class BaseAction
     protected function createProcess(): Process
     {
         if (static::$runType === RunType::Background) {
-            $this->process = new BackgroundProcess($this->client->build())->pipeOutput($this->pipeProcessOutput());
+            $bgProcess = new BackgroundProcess($this->client->build())->pipeOutput($this->pipeProcessOutput());
+
+            if(static::$requiresAuth && !empty($this->user)) {
+                $this->isQueuedProcess = true;
+                $this->queuedProcessId = UserProcesses::queueProcess($this->user, $bgProcess);
+            }
+            $this->process = $bgProcess;
         } else {
             $this->process = new Process($this->client->build());
         }
